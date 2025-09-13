@@ -1,4 +1,4 @@
-const Livro = require('../models/livro');
+const Livro = require('../models/Livro');
 const Response = require('../utils/response')
 
 const getAllLivros = async (filtros = {}) => {
