@@ -1,4 +1,4 @@
-export const categoriasEnum = [
+const categoriasEnum = [
     'ficcao',
     'romance',
     'ficcao-cientifica',
@@ -11,3 +11,4 @@ export const categoriasEnum = [
     'biografia',
     'outros',
 ]
+module.exports = categoriasEnum;

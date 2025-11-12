@@ -1,4 +1,4 @@
-const { categoriasEnum } = require('../utils/enums/categoriasEnum');
+const categoriasEnum = require('../utils/enums/categoriasEnum');
 const db = require('../config/database');
 
 // Busca todos os livros do banco de dados
@@ -74,16 +74,18 @@ const findById = async (id, userId) => {
 
 // Cria um novo registro de livro no banco de dados
 const create = async (request) => {
-    const query = `
-        INSERT INTO livros 
-        (titulo, nome_autor, descricao, isbn, edicao, ano_publicacao, editor, arquivo_url, capa_url, usuario_id, categoria) 
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-    `;
-
-    const categoriaTratada = request.categoria || 'outros';
+    let categoriaTratada = request.categoria || 'outros';
     if (!categoriasEnum.includes(categoriaTratada)) {
         categoriaTratada = 'outros';
     }
+
+    const query = `
+        INSERT INTO livros (
+            titulo, nome_autor, descricao, isbn, edicao, ano_publicacao,
+            editor, arquivo_url, capa_url, usuario_id, categoria
+        )
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    `;
 
     const params = [
         request.titulo || null,
@@ -101,7 +103,7 @@ const create = async (request) => {
 
     const [result] = await db.execute(query, params);
     return findById(result.insertId);
-}
+};
 
 // Atualiza os dados de um livro existente
 const update = async (request, id) => {
@@ -147,6 +149,13 @@ const update = async (request, id) => {
     if (request.capa_url != undefined || request.capa_url) {
         setClause.push('capa_url = ?');
         params.push(request.capa_url);
+    }
+    if (request.categoria) {
+        const categoriaTratada = categoriasEnum.includes(request.categoria)
+            ? request.categoria
+            : 'outros';
+        setClause.push('categoria = ?');
+        params.push(categoriaTratada);
     }
 
     // Caso não tenha nada para atualizar, iremos fazer um "early return"

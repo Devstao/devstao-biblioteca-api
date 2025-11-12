@@ -34,16 +34,17 @@ const createLivro = async (req, res) => {
         const {
             titulo,
             nome_autor,
+            descricao,
             editora,
             ano_publicacao,
             isbn,
             edicao,
             local_publicacao,
-            exemplar
+            exemplar,
+            categoria
         } = req.body;
 
         const userId = req.user.id;
-
         const arquivoLivro = req.files?.arquivo_livro?.[0] || null;
         const capa = req.files?.capa?.[0] || null;
 
@@ -57,12 +58,14 @@ const createLivro = async (req, res) => {
         const params = {
             titulo,
             nome_autor,
+            descricao,
             editora,
             ano_publicacao: ano_publicacao ? Number(ano_publicacao) : undefined,
             isbn,
             edicao,
             local_publicacao,
             exemplar,
+            categoria,
             arquivo_url: `${process.env.BASE_URL}/uploads/${arquivoLivro.filename}`,
             capa_url: capa ? `${process.env.BASE_URL}/uploads/${capa.filename}` : null,
             user_id: userId,
@@ -70,15 +73,13 @@ const createLivro = async (req, res) => {
 
         const result = await livroService.createLivro(params);
 
-        if (result.success) {
-            return res.status(201).json(result.data);
-        }
+        if (result.success) return res.status(201).json(result.data);
         return res.status(500).json({ error: result.error });
     } catch (err) {
         console.error(err);
         return res.status(500).json({ error: 'Erro interno no servidor' });
     }
-}
+};
 
 const updateLivro = async (req, res) => {
     const id = req.params.id;
